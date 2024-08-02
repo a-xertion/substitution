@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <string.h>
+#include <ctype.h>
+
+bool textChecker(string text);
+bool allCharUnique(string text);
+
+int main(void)
+{
+    string key = "";
+    do
+    {
+        printf("\nUsage: ./substitution key");
+        key = get_string("\n"); // the gibberish key
+    }
+    while(!textChecker(key));
+    string text = get_string("plaintext: "); // the message
+    char cipher[strlen(text) + 1];// ciphering the message text
+    cipher[0] = '\0'; // initializing the text
+    string alphabet = "abcdefghijklmnopqrstuvwxyz";
+    for(int i = 0; i < strlen(text); i++)
+    {
+        if(isalpha(text[i])) // checking if char is a letter
+        {
+            int index = 0;
+            printf("text: %c    alphabet: %c", text[i], alphabet[i]);
+            
+            for(int j = 0; j < strlen(alphabet); j++) // finding the place of the text char in the alphabet
+            {
+                if(islower(text[i]) == alphabet[j]) // making sure both are lowered
+                {
+                    index = j; //CONDITION NOT WORKING |^
+                    printf("\nindex: %i\n", index);
+                }
+            }
+
+            if(isupper(text[i]))
+            {
+                char temp[2];
+                temp[0] = (char)toupper(key[index]);
+                temp[1] = '\0';
+                const char* u = temp;
+                strcat(cipher, u);
+            }
+            if(islower(text[i]))
+            {
+                char temp[2];
+                temp[0] = (char)tolower(key[index]); // temp is a char array
+                temp[1] = '\0';
+                const char* l = temp; // making a new variable that is const char*
+                strcat(cipher, l); // encoded char is put into the cipher text.
+            }
+            //debugger helper
+            printf("the letter: %c\nthe encoded: %c", text[i], (char)tolower(key[index]));
+        }
+        if(!isalpha(text[i]))
+        {
+            char temp[2];
+            temp[0] = (char)text[i];
+            temp[1] = '\0';
+            const char* symbol = temp;
+            strcat(cipher, symbol);
+        }
+    }
+    printf("\nciphertext: %s", cipher);
+}
+
+bool textChecker(string text)
+{
+    for(int i = 0; i < strlen(text); i++)
+    {
+        if(isdigit(text[i]))
+        {
+            return false;
+        }
+    }
+    if(strlen(text) != 26)
+    {
+        printf("\nKey must contain 26 characters.");
+        return false;
+    }
+    return allCharUnique(text);
+}
+
+bool allCharUnique(string text)
+{
+    for(int i = 0; i < strlen(text); i++)
+    {
+        for(int j = i + 1; j < strlen(text); j++)
+        {
+            if(text[i] == text[j])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
