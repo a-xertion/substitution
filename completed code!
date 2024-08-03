@@ -1,0 +1,123 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <string.h>
+#include <ctype.h>
+
+bool textChecker(string text);
+bool allCharUnique(string text);
+
+int main(int argc, char* argv[]) // input as you do ./substitution
+{ // argc checks the number of lines the input in command line is
+    char* key = argv[1]; //the key
+    //printf("%s ", argv[1]);
+    if(argc > 2 || argc < 2) // checks if input is more than one or if the input has greater/smaller length
+    {
+        printf("argc > 1");
+        return 1;
+    }
+    if(strlen(argv[1]) != 26)
+    {
+        printf("length biiger");
+        return 1;
+    }
+    /*do
+    {
+        //key = get_string("\nUsage: ./substitution key "); // the gibberish key
+        key = get_string(" ");
+    }*/
+    //while(!textChecker(key));
+    if(!textChecker(key))
+    {
+        return 1;
+    }
+    //string text = get_string("plaintext: "); // the message
+    string text = get_string("plaintext: ");
+    char cipher[strlen(text) + 1];// ciphering the message text
+    cipher[0] = '\0'; // initializing the text
+    string alphabet = "abcdefghijklmnopqrstuvwxyz";
+    for(int i = 0; i < strlen(text); i++)
+    {
+        if(isalpha(text[i])) // checking if char is a letter
+        {
+            int index = 0;
+
+            for(int j = 0; j < strlen(alphabet); j++) // finding the place of the text char in the alphabet
+            {
+                //printf("\ntext: %c    alphabet: %c\n", text[i], alphabet[j]);
+                if(tolower(text[i]) == alphabet[j]) // making sure both are lowered
+                {
+                    index = j; //CONDITION NOT WORKING |^
+                    //printf("\nindex: %i\n", index); // aimee - NTZOO
+                }
+            }
+
+            if(isupper(text[i]))
+            {
+                char temp[2];
+                temp[0] = (char)toupper(key[index]);
+                temp[1] = '\0';
+                const char* u = temp;
+                strcat(cipher, u);
+            }
+            if(islower(text[i])) // islower checks if is lowercase, tolower makes char to lowercase
+            {
+                char temp[2];
+                temp[0] = (char)tolower(key[index]); // temp is a char array
+                temp[1] = '\0';
+                const char* l = temp; // making a new variable that is const char*
+                strcat(cipher, l); // encoded char is put into the cipher text.
+            }
+            //debugger helper
+            //printf("the letter: %c\nthe encoded: %c\n", text[i], (char)tolower(key[index]));
+        }
+        if(!isalpha(text[i]))
+        {
+            char temp[2];
+            temp[0] = (char)text[i];
+            temp[1] = '\0';
+            const char* symbol = temp;
+            strcat(cipher, symbol);
+        }
+    }
+    printf("ciphertext: %s\n", cipher);
+}
+
+bool textChecker(string text)
+{
+    for(int i = 0; i < strlen(text); i++)
+    {
+        if(isdigit(text[i]) || !isalpha(text[i]))
+        {
+            return false;
+        }
+    }
+    if(strlen(text) != 26)
+    {
+        //printf("\nKey must contain 26 characters.");
+        return false;
+    }
+    return allCharUnique(text);
+}
+
+bool allCharUnique(string text)
+{
+    char s[27] = "";
+    for(int i = 0; i < strlen(text); i++)
+    {
+        s[i] = tolower(text[i]);
+        //printf("%c ", s[i]);
+    } // making a char array to turn all values of the text into lowercase to be checked below
+    s[26] = '\0';
+
+    for(int i = 0; i < strlen(s); i++)
+    {
+        for(int j = i + 1; j < strlen(s); j++)
+        {
+            if(s[i] == s[j])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
